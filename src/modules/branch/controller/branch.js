@@ -2,6 +2,7 @@ import { StatusCodes } from "http-status-codes";
 import { asyncHandler } from "../../../utils/errorHandling.js";
 import branchModel from "../../../../DB/models/branch.model.js";
 import logsModel from "../../../../DB/models/logs.model.js";
+import { ApiFeatures } from "../../../utils/apiFeature.js";
 
 
 export const createBranch =asyncHandler(async (req, res) => {
@@ -46,7 +47,22 @@ export const updateBranch = asyncHandler(async (req, res) => {
 })
 
 
-export const Search = asyncHandler(async (req, res) => {
-    const{location}=req.body
+export const SearchByLocation = asyncHandler(async (req, res) => {
     
+    let apiFeatures = new ApiFeatures(
+        branchModel.find(), 
+        req.query
+    )
+        .fields()
+        .pagination(branchModel)
+        .search()
+        .sort()
+        .filter();
+
+    let branches = await apiFeatures.mongooseQuery.exec();
+
+    res.status(StatusCodes.OK).json({
+        branches,
+        countDocuments: apiFeatures.countDocuments,
+    });
 })
