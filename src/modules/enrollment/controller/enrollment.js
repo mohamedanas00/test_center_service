@@ -29,6 +29,7 @@ export const createEnrollment = asyncHandler(async (req, res) => {
         
     const newRegister = await enrollmentModel.create({
         scheduleId,
+        examId: schedule.examId,
         student:{
             id: student.id,
             name: student.name,
@@ -56,7 +57,76 @@ export const setGrade = asyncHandler(async (req, res) => {
     isExist.grade = grade;
     isExist.isMarked = true;
     await isExist.save();
+    await logsModel.create({
+        userId: isExist.student.id,
+        email: isExist.student.email,
+        role: isExist.student.role,
+        action: `Grade set successfully with id ${isExist._id}`,
+    })
     res
         .status(StatusCodes.OK)
         .json({ message: "Grade set successfully", isExist });
+})
+
+
+export const ViewAllExamsWithGrade = asyncHandler(async (req, res) => {
+    const enrollments = await enrollmentModel
+        .find()
+        .populate({
+            path: "scheduleId",
+        })
+        .populate({
+            path: "examId",
+            select: "name duration"
+        })
+        .select("grade isMarked student examId scheduleId");
+    res
+        .status(StatusCodes.OK)
+        .json({ message: "Enrollments retrieved successfully", enrollments: enrollments.map(enrollment => ({
+            id: enrollment._id,
+            student: enrollment.student,
+            grade: enrollment.grade,
+            isMarked: enrollment.isMarked,
+            exam: {
+                id: enrollment.examId._id,
+                name: enrollment.examId.name,
+                duration: enrollment.examId.duration
+            },
+            schedule: {
+                date: enrollment.scheduleId.date,
+                time: enrollment.scheduleId.time,
+                capacity: enrollment.scheduleId.capacity
+            }
+        })) });
+
+})
+
+export const ViewStudentExamHistory= asyncHandler(async (req, res) => {
+    const enrollments = await enrollmentModel
+        .find({ "student.id": req.user.id })
+        .populate({
+            path: "scheduleId",
+        })
+        .populate({
+            path: "examId",
+            select: "name duration"
+        })
+        .select("grade isMarked student examId scheduleId");
+    res
+        .status(StatusCodes.OK)
+        .json({ message: "Enrollments retrieved successfully", enrollments: enrollments.map(enrollment => ({
+            id: enrollment._id,
+            grade: enrollment.grade,
+            isMarked: enrollment.isMarked,
+            exam: {
+                id: enrollment.examId._id,
+                name: enrollment.examId.name,
+                duration: enrollment.examId.duration
+            },
+            schedule: { 
+                date: enrollment.scheduleId.date,
+                time: enrollment.scheduleId.time,
+                capacity: enrollment.scheduleId.capacity
+            }
+        })) });
 })

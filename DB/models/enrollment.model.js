@@ -7,6 +7,11 @@ const enrollmentSchema = new Schema(
       ref: "Schedule",
       required: true,
     },
+    examId: {
+      type: Schema.Types.ObjectId,
+      ref: "Exam",
+      required: true,
+    },
     student: {
       id: {
         type: Number,
@@ -22,8 +27,8 @@ const enrollmentSchema = new Schema(
       },
     },
     grade: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "N/A",
     },
     isMarked: {
       type: Boolean,
