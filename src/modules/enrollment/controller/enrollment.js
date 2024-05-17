@@ -54,14 +54,14 @@ export const setGrade = asyncHandler(async (req, res) => {
     if (!isExist) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Enrollment not found" });
     }
+    console.log(isExist);
     isExist.grade = grade;
     isExist.isMarked = true;
     await isExist.save();
     await logsModel.create({
         userId: isExist.student.id,
         email: isExist.student.email,
-        role: isExist.student.role,
-        action: `Grade set successfully with id ${isExist._id}`,
+        action: `Grade set successfully to student id ${isExist._id}`,
     })
     res
         .status(StatusCodes.OK)
