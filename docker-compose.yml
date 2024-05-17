@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  mongo_db:
-    container_name: test-center-db
-    image: mongo:latest
-    restart: always
-    volumes:
-      - mongo_db:/data/db
-    networks:
-      - my-network
-
   node-app:
     container_name: test-center-node
     build:
@@ -21,14 +12,4 @@ services:
       - PORT=5000
       - DB_ATLAS=mongodb://mongo_db:27017/test-center-db
       - SECRET_KEY_ALGO=HS256
-    depends_on:
-      - mongo_db
-    networks:
-      - my-network
 
-volumes:
-  mongo_db: {}
-
-networks:
-  my-network:
-    driver: bridge

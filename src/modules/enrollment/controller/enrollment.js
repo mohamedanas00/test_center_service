@@ -61,6 +61,7 @@ export const setGrade = asyncHandler(async (req, res) => {
     await logsModel.create({
         userId: isExist.student.id,
         email: isExist.student.email,
+        role: "student",
         action: `Grade set successfully to student id ${isExist._id}`,
     })
     res
