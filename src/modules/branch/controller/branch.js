@@ -70,6 +70,24 @@ export const SearchByLocation = asyncHandler(async (req, res) => {
     });
 })
 
+//using in other service
+export const updateBranchTestCenter = asyncHandler(async (req, res) => {
+    const {name,email } = req.body;
+    const {testCenterId} = req.params;
+    const isExistBranch = await branchModel.findOne({ "testCenter.id": testCenterId });
+    if (!isExistBranch) {
+        return res.status(StatusCodes.NOT_FOUND).json({ message: "Branch not found" });
+    }
+    if(name!==null){
+        isExistBranch.testCenter.name = name
+    }
+    if(email!==null){
+        isExistBranch.testCenter.email = email
+    }
+    await isExistBranch.save();
+    res.status(StatusCodes.OK).json({ message: "Branch updated successfully", isExistBranch });
+})
+
 export const GetBranchesByID = asyncHandler(async (req, res) => {
 
     const testCenter = req.user
