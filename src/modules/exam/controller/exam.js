@@ -21,3 +21,8 @@ export const createExam = asyncHandler(async (req, res) => {
 })
 
 
+export const getExams = asyncHandler(async (req, res) => {
+    const  testCenterId= req.user.id
+    const exam = await examModel.find({ testCenterId });
+    res.status(StatusCodes.OK).json({ exam });
+})
