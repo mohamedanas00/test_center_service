@@ -7,5 +7,6 @@ const branchRouter = Router();
 branchRouter.post("/",auth(userAuth.testCenter), branchController.createBranch);
 branchRouter.put("/:id",auth(userAuth.testCenter), branchController.updateBranch);
 branchRouter.get("/",auth(userAuth.student) ,branchController.SearchByLocation);
+branchRouter.get("/getBranches",auth(userAuth.testCenter), branchController.GetBranchesByID);
 branchRouter.put("/updateTestCenterBranch/:testCenterId", branchController.updateBranchTestCenter);
-export default branchRouter
+export default branchRouter 
