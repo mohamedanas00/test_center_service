@@ -24,3 +24,10 @@ export const createSchedule = asyncHandler(async (req, res) => {
     .status(StatusCodes.CREATED)
     .json({ message: "Schedule created successfully", newSchedule });
 });
+
+
+export const GetAllExamSchedule = asyncHandler(async (req, res) => {
+  const {examId}  = req.params
+  const schedules = await scheduleModel.find({ examId });
+  res.status(StatusCodes.OK).json({ schedules });
+})

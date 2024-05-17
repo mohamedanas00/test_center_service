@@ -79,6 +79,7 @@ export const SearchByLocation = asyncHandler(async (req, res) => {
 export const updateBranchTestCenter = asyncHandler(async (req, res) => {
     const {name,email } = req.body;
     const {testCenterId} = req.params;
+    console.log(name,email,testCenterId)
     const isExistBranch = await branchModel.findOne({ "testCenter.id": testCenterId });
     if (!isExistBranch) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Branch not found" });
