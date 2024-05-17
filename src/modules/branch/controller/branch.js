@@ -28,16 +28,21 @@ export const updateBranch = asyncHandler(async (req, res) => {
     const { location, address } = req.body;
     const testCenter = req.user
     const isExistBranch = await branchModel.findById(id);
-
+    const isUpdated=false;
     if (!isExistBranch) {
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Branch not found" });
     }
 
     if (location) {
         isExistBranch.location = location
+        isUpdated=true
     }
     if (address) {
         isExistBranch.address = address
+        isUpdated=true
+    }
+    if (!isUpdated){
+        return res.status(StatusCodes.NOT_FOUND).json({ message: "Nothing to update" });
     }
     await isExistBranch.save();
     await logsModel.create({
