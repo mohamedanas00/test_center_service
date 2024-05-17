@@ -68,21 +68,31 @@ export const setGrade = asyncHandler(async (req, res) => {
         .json({ message: "Grade set successfully", isExist });
 })
 
-
 export const ViewAllExamsWithGrade = asyncHandler(async (req, res) => {
+    const testCenterId = req.user.id;
+
     const enrollments = await enrollmentModel
         .find()
         .populate({
-            path: "scheduleId",
+            path: 'scheduleId',
+            populate: {
+                path: 'branchId',
+                match: { 'testCenter.id': testCenterId },
+                select: 'address location testCenter'
+            }
         })
         .populate({
-            path: "examId",
-            select: "name duration"
+            path: 'examId',
+            select: 'name duration'
         })
-        .select("grade isMarked student examId scheduleId");
-    res
-        .status(StatusCodes.OK)
-        .json({ message: "Enrollments retrieved successfully", enrollments: enrollments.map(enrollment => ({
+        .select('grade isMarked student examId scheduleId');
+    console.log(enrollments);
+    // Filter out enrollments where the branch does not match the testCenterId
+    const filteredEnrollments = enrollments.filter(enrollment => enrollment.scheduleId.branchId);
+
+    res.status(StatusCodes.OK).json({
+        message: "Enrollments retrieved successfully",
+        enrollments: filteredEnrollments.map(enrollment => ({
             id: enrollment._id,
             student: enrollment.student,
             grade: enrollment.grade,
@@ -96,16 +106,26 @@ export const ViewAllExamsWithGrade = asyncHandler(async (req, res) => {
                 date: enrollment.scheduleId.date,
                 time: enrollment.scheduleId.time,
                 capacity: enrollment.scheduleId.capacity
+            },
+            branch: {
+                id: enrollment.scheduleId.branchId._id,
+                address: enrollment.scheduleId.branchId.address,
+                location: enrollment.scheduleId.branchId.location,
+                testCenterId: enrollment.scheduleId.branchId.testCenter.id
             }
-        })) });
-
-})
+        }))
+    });
+});
 
 export const ViewStudentExamHistory= asyncHandler(async (req, res) => {
     const enrollments = await enrollmentModel
         .find({ "student.id": req.user.id })
         .populate({
             path: "scheduleId",
+            populate: {
+                path: 'branchId',
+                select: 'address location'
+            }
         })
         .populate({
             path: "examId",
@@ -126,7 +146,12 @@ export const ViewStudentExamHistory= asyncHandler(async (req, res) => {
             schedule: { 
                 date: enrollment.scheduleId.date,
                 time: enrollment.scheduleId.time,
-                capacity: enrollment.scheduleId.capacity
+                capacity: enrollment.scheduleId.capacity,
+            },
+            branch: {
+                id: enrollment.scheduleId.branchId._id,
+                address: enrollment.scheduleId.branchId.address,
+                location: enrollment.scheduleId.branchId.location,
             }
         })) });
 })
