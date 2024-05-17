@@ -5,7 +5,7 @@ import logsModel from "../../../../DB/models/logs.model.js";
 import scheduleModel from "../../../../DB/models/schedule.model.js";
 
 
-export const createEnrollment = asyncHandler(async (req, res) => {
+export const createEnrollment = asyncHandler(async (req, res,next) => {
     const { scheduleId } = req.params;
     const  student  = req.user;
     const isExist = await enrollmentModel.findOne({
@@ -47,7 +47,7 @@ export const createEnrollment = asyncHandler(async (req, res) => {
         .json({ message: "Enrollment created successfully", newRegister });
 })
 
-export const setGrade = asyncHandler(async (req, res) => {
+export const setGrade = asyncHandler(async (req, res,next) => {
     const {enrollmentId } = req.params;
     const { grade } = req.body;
     const isExist = await enrollmentModel.findById(enrollmentId);
@@ -69,7 +69,7 @@ export const setGrade = asyncHandler(async (req, res) => {
         .json({ message: "Grade set successfully", isExist });
 })
 
-export const ViewAllExamsWithGrade = asyncHandler(async (req, res) => {
+export const ViewAllExamsWithGrade = asyncHandler(async (req, res,next) => {
     const testCenterId = req.user.id;
 
     const enrollments = await enrollmentModel
@@ -118,7 +118,7 @@ export const ViewAllExamsWithGrade = asyncHandler(async (req, res) => {
     });
 });
 
-export const ViewStudentExamHistory= asyncHandler(async (req, res) => {
+export const ViewStudentExamHistory= asyncHandler(async (req, res,next) => {
     const enrollments = await enrollmentModel
         .find({ "student.id": req.user.id })
         .populate({

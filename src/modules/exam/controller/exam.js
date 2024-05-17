@@ -5,7 +5,7 @@ import logsModel from "../../../../DB/models/logs.model.js";
 
 
 
-export const createExam = asyncHandler(async (req, res) => {
+export const createExam = asyncHandler(async (req, res,next) => {
     const { name, duration } = req.body;
     const testCenter = req.user
     const  testCenterId= req.user.id
@@ -21,7 +21,7 @@ export const createExam = asyncHandler(async (req, res) => {
 })
 
 
-export const getExams = asyncHandler(async (req, res) => {
+export const getExams = asyncHandler(async (req, res,next) => {
     const  testCenterId= req.user.id
     const exam = await examModel.find({ testCenterId });
     res.status(StatusCodes.OK).json({ exam });
