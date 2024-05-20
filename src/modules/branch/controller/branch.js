@@ -80,19 +80,19 @@ export const updateBranchTestCenter = asyncHandler(async (req, res) => {
     const {name,email } = req.body;
     const {testCenterId} = req.params;
     console.log(name,email,testCenterId)
-    const isExistBranch = await branchModel.findOne({ "testCenter.id": testCenterId });
-    if (!isExistBranch) {
-        return res.status(StatusCodes.NOT_FOUND).json({ message: "Branch not found" });
+    const updateOps = {
+        $set: {}
     }
     if(name!==null){
-        isExistBranch.testCenter.name = name
+        updateOps.$set['testCenter.name'] = name
     }
     if(email!==null){
-        isExistBranch.testCenter.email = email
+        updateOps.$set['testCenter.email'] = email
     }
-    await isExistBranch.save();
-    res.status(StatusCodes.OK).json({ message: "Branch updated successfully", isExistBranch });
+    const branches = await branchModel.updateMany({ "testCenter.id": testCenterId }, updateOps);
+    res.status(StatusCodes.OK).json({ message: `All branches with testCenterId ${testCenterId} updated successfully`, branches: branches.modifiedCount });
 })
+
 
 export const GetBranchesByID = asyncHandler(async (req, res) => {
 
